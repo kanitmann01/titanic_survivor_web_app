@@ -16,7 +16,7 @@ Your Titanic Survival Predictor is now equipped with a **professional-grade anal
 ### 2. **Professional Dashboard** (`/analytics`)
 - ✅ **Key Metrics Display**: Total visits, predictions, survival rate, uptime
 - ✅ **Interactive Charts**: Beautiful Chart.js visualizations
-- ✅ **Real-Time Updates**: Live data updates as users interact
+- ✅ **Smart Updates**: Auto-refreshes every 2 hours + manual refresh button
 - ✅ **Resume-Ready Summary**: Professional bullet points for your CV
 - ✅ **Export Capabilities**: Print PDF reports and JSON data export
 

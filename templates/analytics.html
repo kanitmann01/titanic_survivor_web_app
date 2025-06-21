@@ -16,7 +16,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <i class="fas fa-users display-4 text-primary mb-2"></i>
-                <h3 class="card-title text-primary">{{ stats.total_visits }}</h3>
+                <h3 class="card-title text-primary" id="totalVisits">{{ stats.total_visits }}</h3>
                 <p class="card-text">Total Visits</p>
             </div>
         </div>
@@ -26,7 +26,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <i class="fas fa-magic display-4 text-success mb-2"></i>
-                <h3 class="card-title text-success">{{ stats.total_predictions }}</h3>
+                <h3 class="card-title text-success" id="totalPredictions">{{ stats.total_predictions }}</h3>
                 <p class="card-text">Predictions Made</p>
             </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <i class="fas fa-life-ring display-4 text-info mb-2"></i>
-                <h3 class="card-title text-info">{{ stats.survival_rate }}%</h3>
+                <h3 class="card-title text-info" id="survivalRate">{{ stats.survival_rate }}%</h3>
                 <p class="card-text">Survival Rate</p>
             </div>
         </div>
@@ -46,7 +46,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <i class="fas fa-calendar display-4 text-warning mb-2"></i>
-                <h3 class="card-title text-warning">{{ stats.days_running }}</h3>
+                <h3 class="card-title text-warning" id="daysRunning">{{ stats.days_running }}</h3>
                 <p class="card-text">Days Running</p>
             </div>
         </div>
@@ -196,10 +196,22 @@
         <i class="fas fa-download me-2"></i>
         Export JSON Data
     </a>
+    <button onclick="refreshAnalytics()" class="btn btn-outline-success me-3">
+        <i class="fas fa-sync-alt me-2"></i>
+        Refresh Data
+    </button>
     <button onclick="window.print()" class="btn btn-outline-secondary">
         <i class="fas fa-print me-2"></i>
         Print Report
     </button>
+</div>
+
+<!-- Auto-refresh indicator -->
+<div class="text-center mb-3">
+    <small class="text-muted">
+        <i class="fas fa-clock me-1"></i>
+        Auto-refreshes every 2 hours | Last updated: <span id="lastUpdated">{{ stats.last_updated[:19] }}</span>
+    </small>
 </div>
 
 {% endblock %}
@@ -207,9 +219,19 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Survival Results Chart
+// Chart contexts and data
 const survivalCtx = document.getElementById('survivalChart').getContext('2d');
-new Chart(survivalCtx, {
+const classCtx = document.getElementById('classChart').getContext('2d');
+const activityCtx = document.getElementById('activityChart').getContext('2d');
+const activityLabels = [{% for day in stats.recent_activity %}"{{ day.date[5:] }}"{% if not loop.last %},{% endif %}{% endfor %}];
+const visitsData = [{% for day in stats.recent_activity %}{{ day.visits }}{% if not loop.last %},{% endif %}{% endfor %}];
+const predictionsData = [{% for day in stats.recent_activity %}{{ day.predictions }}{% if not loop.last %},{% endif %}{% endfor %}];
+
+// Auto-refresh functionality
+let survivalChart, classChart, activityChart;
+
+// Store chart references for updates
+survivalChart = new Chart(survivalCtx, {
     type: 'doughnut',
     data: {
         labels: ['Survived', 'Did Not Survive'],
@@ -230,9 +252,7 @@ new Chart(survivalCtx, {
     }
 });
 
-// Passenger Class Chart
-const classCtx = document.getElementById('classChart').getContext('2d');
-new Chart(classCtx, {
+classChart = new Chart(classCtx, {
     type: 'bar',
     data: {
         labels: ['First Class', 'Second Class', 'Third Class'],
@@ -254,13 +274,7 @@ new Chart(classCtx, {
     }
 });
 
-// 7-Day Activity Chart
-const activityCtx = document.getElementById('activityChart').getContext('2d');
-const activityLabels = [{% for day in stats.recent_activity %}"{{ day.date[5:] }}"{% if not loop.last %},{% endif %}{% endfor %}];
-const visitsData = [{% for day in stats.recent_activity %}{{ day.visits }}{% if not loop.last %},{% endif %}{% endfor %}];
-const predictionsData = [{% for day in stats.recent_activity %}{{ day.predictions }}{% if not loop.last %},{% endif %}{% endfor %}];
-
-new Chart(activityCtx, {
+activityChart = new Chart(activityCtx, {
     type: 'line',
     data: {
         labels: activityLabels,
@@ -288,5 +302,90 @@ new Chart(activityCtx, {
         }
     }
 });
+
+// Refresh function
+async function refreshAnalytics() {
+    try {
+        const refreshBtn = document.querySelector('button[onclick="refreshAnalytics()"]');
+        const icon = refreshBtn.querySelector('i');
+        
+        // Show loading state
+        icon.classList.add('fa-spin');
+        refreshBtn.disabled = true;
+        
+        // Fetch new data
+        const response = await fetch('/api/analytics');
+        const newStats = await response.json();
+        
+        // Update charts
+        updateCharts(newStats);
+        
+        // Update metrics cards
+        updateMetricCards(newStats);
+        
+        // Update last updated time
+        document.getElementById('lastUpdated').textContent = newStats.last_updated.substring(0, 19);
+        
+        // Reset button state
+        icon.classList.remove('fa-spin');
+        refreshBtn.disabled = false;
+        
+        console.log('Analytics refreshed successfully');
+    } catch (error) {
+        console.error('Error refreshing analytics:', error);
+        
+        // Reset button state
+        const refreshBtn = document.querySelector('button[onclick="refreshAnalytics()"]');
+        const icon = refreshBtn.querySelector('i');
+        icon.classList.remove('fa-spin');
+        refreshBtn.disabled = false;
+    }
+}
+
+function updateCharts(stats) {
+    // Update survival chart
+    survivalChart.data.datasets[0].data = [
+        stats.predictions_by_result.survived,
+        stats.predictions_by_result.died
+    ];
+    survivalChart.update();
+    
+    // Update class chart
+    classChart.data.datasets[0].data = [
+        stats.predictions_by_class['1'],
+        stats.predictions_by_class['2'],
+        stats.predictions_by_class['3']
+    ];
+    classChart.update();
+    
+    // Update activity chart
+    const newLabels = stats.recent_activity.map(day => day.date.substring(5));
+    const newVisits = stats.recent_activity.map(day => day.visits);
+    const newPredictions = stats.recent_activity.map(day => day.predictions);
+    
+    activityChart.data.labels = newLabels;
+    activityChart.data.datasets[0].data = newVisits;
+    activityChart.data.datasets[1].data = newPredictions;
+    activityChart.update();
+}
+
+function updateMetricCards(stats) {
+    // Update metric values using specific IDs
+    const totalVisits = document.getElementById('totalVisits');
+    const totalPredictions = document.getElementById('totalPredictions');
+    const survivalRate = document.getElementById('survivalRate');
+    const daysRunning = document.getElementById('daysRunning');
+    
+    if (totalVisits) totalVisits.textContent = stats.total_visits;
+    if (totalPredictions) totalPredictions.textContent = stats.total_predictions;
+    if (survivalRate) survivalRate.textContent = stats.survival_rate + '%';
+    if (daysRunning) daysRunning.textContent = stats.days_running;
+}
+
+// Auto-refresh every 2 hours (7,200,000 milliseconds)
+setInterval(refreshAnalytics, 7200000);
+
+// Initial setup message
+console.log('Analytics dashboard loaded. Auto-refresh every 2 hours.');
 </script>
 {% endblock %}

@@ -18,7 +18,8 @@ Professional dashboard displaying:
 - **Interactive Charts**: Pie charts, bar charts, and line graphs using Chart.js
 - **Device Analytics**: Mobile vs Desktop vs Tablet usage
 - **Browser Statistics**: Chrome, Firefox, Safari, Edge distribution
-- **7-Day Activity**: Recent visitor and prediction trends
+- **7-Day Activity**: Recent visitor and prediction trends (auto-refreshes every 2 hours)
+- **Manual Refresh**: Instant update button for immediate data refresh
 - **Resume-Ready Summary**: Professional bullet points for your CV
 
 ### API Endpoint (`/api/analytics`)
