@@ -123,10 +123,51 @@ Good for serverless deployment.
 
 Your project now includes these deployment files:
 
-- **`Procfile`** - Tells hosting platforms how to run your app
-- **`railway.json`** - Railway-specific configuration
+- **`Procfile`** - Uses Gunicorn for production deployment: `web: gunicorn app:app --host 0.0.0.0 --port $PORT`
+- **`railway.json`** - Railway-specific configuration with Gunicorn and restart policies
 - **`runtime.txt`** - Specifies Python version
-- **`requirements.txt`** - Your Python dependencies
+- **`requirements.txt`** - Your Python dependencies including Gunicorn>=21.2.0
+
+## 🏭 **Production Setup (Gunicorn)**
+
+Your app is now configured for **production deployment** with Gunicorn WSGI server:
+
+### **Key Improvements:**
+- ✅ **Gunicorn WSGI Server** - Production-grade server (not development Flask server)
+- ✅ **Auto-restart policies** - App restarts automatically on failure
+- ✅ **Better performance** - Handles multiple concurrent requests
+- ✅ **Production security** - Proper production configuration
+
+### **Configuration Files:**
+
+**Procfile:**
+```
+web: gunicorn app:app --host 0.0.0.0 --port $PORT
+```
+
+**railway.json:**
+```json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "nixpacks"
+  },
+  "deploy": {
+    "startCommand": "gunicorn app:app --host 0.0.0.0 --port $PORT",
+    "restartPolicyType": "on_failure",
+    "restartPolicyMaxRetries": 3
+  }
+}
+```
+
+**requirements.txt (updated):**
+```
+Flask>=3.0.0
+pandas>=2.2.0
+scikit-learn>=1.5.0
+Werkzeug>=3.0.0
+gunicorn>=21.2.0
+```
 
 ## 🔧 **Pre-Deployment Checklist**
 
