@@ -48,22 +48,26 @@ JSON endpoint returning all analytics data for:
 
 4. **`templates/base.html`** - Google Analytics integration (commented)
 
-### Data Storage
-Analytics data is stored in `analytics_data.json` with structure:
-```json
-{
-  "total_visits": 0,
-  "total_predictions": 0,
-  "predictions_by_result": {"survived": 0, "died": 0},
-  "predictions_by_class": {"1": 0, "2": 0, "3": 0},
-  "predictions_by_gender": {"male": 0, "female": 0},
-  "daily_stats": {},
-  "browser_stats": {},
-  "device_stats": {},
-  "app_launched": "2024-01-01T00:00:00",
-  "last_updated": "2024-01-01T00:00:00"
-}
-```
+### Data Storage ✅ **PERSISTENT**
+Analytics data is now stored in **SQLite database** (`analytics.db`) for **persistence across container restarts**:
+
+**Key Benefits:**
+- ✅ **Survives container restarts** - Data never lost on deployment
+- ✅ **Production-ready** - Works on Railway, Render, Heroku, all platforms
+- ✅ **Automatic migration** - Existing JSON data automatically migrated
+- ✅ **Thread-safe operations** - Handles concurrent users safely
+- ✅ **Backup capabilities** - Easy export to JSON for archival
+
+**Database Schema:**
+- `analytics` - Main counters (visits, predictions, timestamps)
+- `predictions_by_result` - Survived vs died tracking
+- `predictions_by_class` - First/Second/Third class distribution  
+- `predictions_by_gender` - Male/female prediction tracking
+- `daily_stats` - Day-by-day activity history
+- `browser_stats` - Browser usage analytics
+- `device_stats` - Device type analytics
+
+**Migration:** Legacy JSON data automatically migrated on first run, with backup created.
 
 ## 📈 Setting Up Google Analytics (Optional)
 
@@ -138,15 +142,19 @@ The analytics dashboard provides a "Resume-Ready Summary" section with professio
 - IP addresses can be optionally tracked for unique visitor counts
 - No personal data stored - only aggregated usage statistics
 
-### Performance
-- Lightweight JSON storage (minimal overhead)
-- Thread-safe operations for concurrent users
-- Efficient data loading and saving
+### Performance & Persistence ✅
+- **SQLite database storage** - Production-grade persistence
+- **Container restart survival** - Data never lost on redeploys
+- **Thread-safe operations** for concurrent users
+- **Efficient querying and indexing** with SQL
+- **Automatic backup capabilities** to JSON format
 
-### Scalability
-- Easy to extend with additional metrics
-- JSON format allows simple data export/import
-- Can be upgraded to database storage if needed
+### Scalability & Production Ready
+- **Database-driven architecture** - Ready for high traffic
+- **Easy schema extensions** - Add new metrics via SQL
+- **Cross-platform compatibility** - Works on all hosting platforms
+- **Professional data management** - SQLite widely supported
+- **Migration support** - Seamless upgrade from legacy systems
 
 ## 💡 Usage Tips
 

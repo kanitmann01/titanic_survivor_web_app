@@ -1,0 +1,33 @@
+{
+  "total_visits": 7,
+  "total_predictions": 5,
+  "predictions_by_result": {
+    "survived": 3,
+    "died": 2
+  },
+  "predictions_by_class": {
+    "1": 3,
+    "2": 1,
+    "3": 1
+  },
+  "predictions_by_gender": {
+    "male": 3,
+    "female": 2
+  },
+  "daily_stats": {
+    "2025-06-21": {
+      "visits": 7,
+      "predictions": 5,
+      "unique_ips": []
+    }
+  },
+  "browser_stats": {
+    "Chrome": 4,
+    "Other": 3
+  },
+  "device_stats": {
+    "Desktop": 7
+  },
+  "last_updated": "2025-06-21T10:17:22.156579",
+  "app_launched": "2025-06-21T09:43:21.196571"
+}

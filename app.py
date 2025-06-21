@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 import pickle
 import os
-from analytics import analytics
+from analytics_persistent import analytics
 
 app = Flask(__name__)
 
