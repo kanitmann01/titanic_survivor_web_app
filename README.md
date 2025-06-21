@@ -6,7 +6,7 @@ A fun and interactive web application that predicts whether you would have survi
 
 **Score: 0.74401** on the Kaggle leaderboard - using Random Forest Classification
 
-[![Star on GitHub](https://img.shields.io/github/stars/YOUR_USERNAME/titanic-survival-predictor?style=social)](https://github.com/YOUR_USERNAME/titanic-survival-predictor)
+[![Star on GitHub](https://img.shields.io/github/stars/kanitmann01/titanic-survival-predictor?style=social)](https://github.com/kanitmann01/titanic-survival-predictor)
 
 ## ✨ Features
 
@@ -201,9 +201,9 @@ This project demonstrates:
 
 If you find this project helpful or interesting, please consider giving it a star on GitHub!
 
-[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/titanic-survival-predictor?style=for-the-badge&logo=github)](https://github.com/YOUR_USERNAME/titanic-survival-predictor)
+[![GitHub stars](https://img.shields.io/github/stars/kanitmann01/titanic-survival-predictor?style=for-the-badge&logo=github)](https://github.com/kanitmann01/titanic-survival-predictor)
 
-**🚀 [View on GitHub](https://github.com/YOUR_USERNAME/titanic-survival-predictor)**
+**🚀 [View on GitHub](https://github.com/kanitmann01/titanic-survival-predictor)**
 
 ### Ways to Support:
 - ⭐ **Star the repository** on GitHub
