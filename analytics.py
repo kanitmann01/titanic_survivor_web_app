@@ -170,7 +170,20 @@ class TitanicAnalytics:
         recent_days.reverse()
         
         app_launched = datetime.fromisoformat(data['app_launched'])
-        days_running = (datetime.now() - app_launched).days
+        time_diff = datetime.now() - app_launched
+        days_running = time_diff.days
+        
+        # If less than 1 day, show hours running instead
+        if days_running == 0:
+            hours_running = int(time_diff.total_seconds() / 3600)
+            if hours_running == 0:
+                # Less than 1 hour, show as "< 1 hour"
+                days_running = "< 1 hour"
+            else:
+                days_running = f"{hours_running} hours"
+        else:
+            # Show as number for proper sorting in templates
+            days_running = days_running
         
         return {
             'total_visits': data['total_visits'],
