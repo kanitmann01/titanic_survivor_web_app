@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-4">
+    {% if result.survived %}
+        <div class="alert alert-success border-0 shadow-sm">
+            <h2 class="alert-heading">
+                <i class="fas fa-life-ring text-success"></i>
+                🎉 Congratulations! You Survived! 🎉
+            </h2>
+            <p class="mb-0">Based on your passenger profile, you would have made it to safety aboard a lifeboat.</p>
+        </div>
+    {% else %}
+        <div class="alert alert-danger border-0 shadow-sm">
+            <h2 class="alert-heading">
+                <i class="fas fa-skull-crossbones text-danger"></i>
+                💔 Unfortunately, you didn't survive 💔
+            </h2>
+            <p class="mb-0">Based on your passenger profile, you would not have survived the Titanic disaster.</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title text-primary">
+                    <i class="fas fa-chart-pie"></i> Survival Probability
+                </h5>
+                <div class="position-relative">
+                    <canvas id="probabilityChart" width="200" height="200"></canvas>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <h3 class="text-success mb-0">{{ result.survival_probability }}%</h3>
+                        <small class="text-muted">Survival</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="fas fa-user-circle"></i> Your Passenger Profile
+                </h5>
+                <div class="row">
+                    <div class="col-6">
+                        <strong>Class:</strong><br>
+                        {% if result.user_data.Pclass == 1 %}
+                            <span class="badge bg-warning">First Class 👑</span>
+                        {% elif result.user_data.Pclass == 2 %}
+                            <span class="badge bg-info">Second Class 🎩</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Third Class 👔</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        <strong>Gender:</strong><br>
+                        {% if result.user_data.Sex == 'female' %}
+                            <span class="badge bg-pink">Female ♀️</span>
+                        {% else %}
+                            <span class="badge bg-blue">Male ♂️</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <strong>Age:</strong> {{ result.user_data.Age }} years<br>
+                        <strong>Fare:</strong> £{{ result.user_data.Fare }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Family:</strong> {{ result.user_data.SibSp + result.user_data.Parch }} relatives<br>
+                        <strong>Port:</strong> 
+                        {% if result.user_data.Embarked == 'C' %}Cherbourg 🇫🇷
+                        {% elif result.user_data.Embarked == 'Q' %}Queenstown 🇮🇪
+                        {% else %}Southampton 🇬🇧{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title text-primary">
+            <i class="fas fa-lightbulb"></i> Historical Insights
+        </h5>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <div class="p-3">
+                    <i class="fas fa-venus display-4 text-info mb-2"></i>
+                    <h6>Women & Children First</h6>
+                    <p class="small text-muted">74% of women and 52% of children survived, following maritime tradition.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-3">
+                    <i class="fas fa-crown display-4 text-warning mb-2"></i>
+                    <h6>Class Matters</h6>
+                    <p class="small text-muted">First class: 63% survival rate. Third class: only 24% survived.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-3">
+                    <i class="fas fa-users display-4 text-success mb-2"></i>
+                    <h6>Family Size Impact</h6>
+                    <p class="small text-muted">Small families (1-3 people) had higher survival rates than large families.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <a href="/" class="btn btn-primary btn-lg me-3">
+        <i class="fas fa-redo me-2"></i>
+        Try Again with Different Details
+    </a>
+    
+    <a href="https://github.com/kanitmann01/kaggle_titanic_submission" 
+       target="_blank" 
+       class="btn btn-outline-dark btn-lg">
+        <i class="fab fa-github me-2"></i>
+        ⭐ Star on GitHub
+    </a>
+</div>
+
+<div class="text-center mt-3">
+    <small class="text-muted">
+        <i class="fas fa-trophy me-1"></i>
+        <strong>Kaggle Score: 0.74401</strong> - Random Forest Classification
+    </small>
+</div>
+
+<style>
+.bg-pink { background-color: #e91e63 !important; }
+.bg-blue { background-color: #2196f3 !important; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Create probability chart
+const ctx = document.getElementById('probabilityChart').getContext('2d');
+const survivalProb = parseFloat('{{ result.survival_probability }}');
+const deathProb = parseFloat('{{ result.death_probability }}');
+
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Survival', 'Death'],
+        datasets: [{
+            data: [survivalProb, deathProb],
+            backgroundColor: [
+                '#28a745',
+                '#dc3545'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        cutout: '70%'
+    }
+});
+</script>
+{% endblock %}
