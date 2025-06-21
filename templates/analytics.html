@@ -2,6 +2,36 @@
 
 {% block title %}Analytics Dashboard - Titanic Survival Predictor{% endblock %}
 
+{% block head %}
+<style>
+/* Prevent layout shifts during chart updates */
+.chart-container {
+    overflow: hidden !important;
+    width: 100% !important;
+}
+
+.chart-container canvas {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Prevent page jumping during updates */
+body.updating {
+    overflow-anchor: none;
+}
+
+/* Stable card heights */
+.card {
+    overflow: hidden;
+}
+
+.card-body {
+    min-height: fit-content;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="text-center mb-4">
     <h2 class="text-primary">
@@ -62,7 +92,9 @@
                 <h5 class="card-title text-primary">
                     <i class="fas fa-chart-pie"></i> Prediction Results
                 </h5>
-                <canvas id="survivalChart" width="300" height="200"></canvas>
+                <div class="chart-container" style="height: 250px; position: relative;">
+                    <canvas id="survivalChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -74,7 +106,9 @@
                 <h5 class="card-title text-primary">
                     <i class="fas fa-chart-bar"></i> Passenger Class Distribution
                 </h5>
-                <canvas id="classChart" width="300" height="200"></canvas>
+                <div class="chart-container" style="height: 250px; position: relative;">
+                    <canvas id="classChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -123,7 +157,9 @@
                 <h5 class="card-title text-primary">
                     <i class="fas fa-chart-line"></i> 7-Day Activity
                 </h5>
-                <canvas id="activityChart" width="800" height="300"></canvas>
+                <div class="chart-container" style="height: 300px; position: relative;">
+                    <canvas id="activityChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -248,6 +284,9 @@ survivalChart = new Chart(survivalCtx, {
             legend: {
                 position: 'bottom'
             }
+        },
+        animation: {
+            duration: 0 // Disable animations during updates to prevent layout shifts
         }
     }
 });
@@ -270,6 +309,9 @@ classChart = new Chart(classCtx, {
             y: {
                 beginAtZero: true
             }
+        },
+        animation: {
+            duration: 0 // Disable animations during updates to prevent layout shifts
         }
     }
 });
@@ -299,6 +341,9 @@ activityChart = new Chart(activityCtx, {
             y: {
                 beginAtZero: true
             }
+        },
+        animation: {
+            duration: 0 // Disable animations during updates to prevent layout shifts
         }
     }
 });
@@ -308,6 +353,9 @@ async function refreshAnalytics() {
     try {
         const refreshBtn = document.querySelector('button[onclick="refreshAnalytics()"]');
         const icon = refreshBtn.querySelector('i');
+        
+        // Prevent scroll jumping during update
+        document.body.classList.add('updating');
         
         // Show loading state
         icon.classList.add('fa-spin');
@@ -330,25 +378,32 @@ async function refreshAnalytics() {
         icon.classList.remove('fa-spin');
         refreshBtn.disabled = false;
         
+        // Remove updating class
+        document.body.classList.remove('updating');
+        
         console.log('Analytics refreshed successfully');
     } catch (error) {
         console.error('Error refreshing analytics:', error);
         
-        // Reset button state
+        // Reset button state and remove updating class
         const refreshBtn = document.querySelector('button[onclick="refreshAnalytics()"]');
         const icon = refreshBtn.querySelector('i');
         icon.classList.remove('fa-spin');
         refreshBtn.disabled = false;
+        document.body.classList.remove('updating');
     }
 }
 
 function updateCharts(stats) {
+    // Store current scroll position to prevent jumping
+    const currentScrollY = window.scrollY;
+    
     // Update survival chart
     survivalChart.data.datasets[0].data = [
         stats.predictions_by_result.survived,
         stats.predictions_by_result.died
     ];
-    survivalChart.update();
+    survivalChart.update('none'); // Use 'none' mode to prevent layout changes
     
     // Update class chart
     classChart.data.datasets[0].data = [
@@ -356,7 +411,7 @@ function updateCharts(stats) {
         stats.predictions_by_class['2'],
         stats.predictions_by_class['3']
     ];
-    classChart.update();
+    classChart.update('none'); // Use 'none' mode to prevent layout changes
     
     // Update activity chart
     const newLabels = stats.recent_activity.map(day => day.date.substring(5));
@@ -366,7 +421,10 @@ function updateCharts(stats) {
     activityChart.data.labels = newLabels;
     activityChart.data.datasets[0].data = newVisits;
     activityChart.data.datasets[1].data = newPredictions;
-    activityChart.update();
+    activityChart.update('none'); // Use 'none' mode to prevent layout changes
+    
+    // Restore scroll position to prevent jumping
+    window.scrollTo(0, currentScrollY);
 }
 
 function updateMetricCards(stats) {
