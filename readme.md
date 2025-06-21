@@ -4,7 +4,7 @@ My solution for the Titanic survival prediction competition on Kaggle.
 
 ## 🏆 Results
 
-**Score: 0.74401** on the Kaggle leaderboard - using Random Forest Classification
+**Score: 0.77751** on the Kaggle leaderboard - using Random Forest Classification
 
 ## 📁 Repository Structure
 
@@ -38,7 +38,7 @@ The notebook contains all the data preprocessing, analysis, and model training s
 
 - **Competition:** Titanic - Machine Learning from Disaster
 - **Task:** Binary classification (survived/didn't survive)
-- **Final Score:** 0.74401
+- **Final Score:** 0.77751
 - **Submission File:** `submission.csv`
 
 ## 📊 Key Approach

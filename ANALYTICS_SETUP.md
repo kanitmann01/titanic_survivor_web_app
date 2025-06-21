@@ -99,7 +99,7 @@ The analytics dashboard provides a "Resume-Ready Summary" section with professio
 **Example Output:**
 - Deployed machine learning web application with **1,250 total users**
 - Generated **847 survival predictions** using Random Forest algorithm
-- Achieved **0.74401 accuracy score** on Kaggle competition dataset
+- Achieved **0.77751 accuracy score** on Kaggle competition dataset
 - Built with Flask, Bootstrap, and Chart.js for responsive user experience
 - Implemented comprehensive analytics tracking across multiple device types
 - Running successfully for **45 days** with consistent user engagement
@@ -114,7 +114,7 @@ The analytics dashboard provides a "Resume-Ready Summary" section with professio
 
 ### For Technical Roles
 - **Total Predictions Made**: Shows ML model usage
-- **Accuracy Score**: Demonstrates model performance (0.74401)
+- **Accuracy Score**: Demonstrates model performance (0.77751)
 - **Cross-Device Compatibility**: Mobile/Desktop/Tablet usage stats
 - **Browser Support**: Chrome, Firefox, Safari compatibility
 - **Uptime**: Days running successfully
