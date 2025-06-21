@@ -4,7 +4,7 @@ A fun and interactive web application that predicts whether you would have survi
 
 ## 🏆 Kaggle Competition Results
 
-**Score: 0.74401** on the Kaggle leaderboard - using Random Forest Classification
+**Score: 0.77751** on the Kaggle leaderboard - using Random Forest Classification
 
 [![Star on GitHub](https://img.shields.io/github/stars/kanitmann01/titanic_survivor_web_app?style=social)](https://github.com/kanitmann01/titanic_survivor_web_app)
 
